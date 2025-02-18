@@ -6,6 +6,6 @@ import com.example.mypocapp.data.models.userdata.UserResponse
 import kotlinx.coroutines.flow.Flow
 
 interface UsersRepository {
-    suspend fun fetchUsers(limit: Int = 10): Flow<NetworkResult<List<UserResponse>>>
+    suspend fun fetchUsers(limit: Int = 2): Flow<NetworkResult<UserResponse>>
 
 }

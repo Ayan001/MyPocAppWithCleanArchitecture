@@ -11,7 +11,7 @@ class UsersRepositoryImpl(
 
     private val usersApiService: UserApiServiceHelper) : UsersRepository {
 
-    override suspend fun fetchUsers(limit: Int) = flow<NetworkResult<List<UserResponse>>> {
+    override suspend fun fetchUsers(limit: Int) = flow<NetworkResult<UserResponse>> {
         emit(NetworkResult.Loading())
         with(usersApiService.fetchAllUsers(limit)) {
             if (isSuccessful) {

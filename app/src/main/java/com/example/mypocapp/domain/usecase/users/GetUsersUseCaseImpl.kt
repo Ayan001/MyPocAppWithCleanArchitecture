@@ -12,7 +12,8 @@ class GetUsersUseCaseImpl(private val usersRepo: UsersRepository) : GetUsersUseC
         usersRepo.fetchUsers().collect { userResponse ->
             when (userResponse) {
                 is NetworkResult.Success -> {
-                    val userDataList = userResponse.data?.map { user ->
+
+                    val userDataList = userResponse.data?.data?.map { user ->
                         user.mapUsersDataItems()
                     }
                     emit(NetworkResult.Success(userDataList))

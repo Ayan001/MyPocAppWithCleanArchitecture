@@ -1,7 +1,9 @@
 package com.example.mypocapp.presentation.ui.features.user.view
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,21 +15,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.centerAlignedTopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +50,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -58,6 +65,7 @@ import com.example.mypocapp.presentation.ui.theme.MyPocAppTheme
 import com.example.mypocapp.util.TestTags
 import com.example.mypocapp.util.TestTags.PROGRESS_BAR
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "ResourceAsColor")
@@ -85,6 +93,23 @@ fun UserScreen(
      * to get the instance of the navController
      */
     val navController = rememberNavController()
+
+    // Listen for side effects from the VM
+    LaunchedEffect(effectFlow) {
+        effectFlow?.onEach { effect ->
+            if (effect is BaseContract.Effect.DataWasLoaded)
+                snackBarHostState.showSnackbar(
+                    message = userMessage,
+                    duration = SnackbarDuration.Short
+                )
+        }?.collect { value ->
+            if (value is BaseContract.Effect.Error) {
+                // Handle other emitted values if needed
+                Toast.makeText(context, value.errorMessage, Toast.LENGTH_LONG).show()
+            }
+
+        }
+    }
 
    Scaffold (
 
@@ -182,41 +207,49 @@ fun UserList(
     onItemClicked: (url: String, imageId: String) -> Unit = { _: String, _: String ->}
     ){
 
-    LazyColumn(modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth(),
+    LazyColumn(modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(5.dp),
 
         content = {
             this.items (users)
             {item->
-                Row (modifier = Modifier
-                    .background(Color.Gray)
-                    .height(55.dp)
-                    .fillMaxWidth()
-                ){
-                    Box (modifier = Modifier
-                        .background(Color.Cyan)
-                        .fillMaxHeight()
-                        .width(55.dp)
-                        .weight(1f)
-
-                    ){
-                    }
-                    Column(modifier = Modifier
-                        .background(Color.DarkGray)
-                        .fillMaxHeight()
+                Card(
+                    modifier = Modifier.background(Color.Magenta)
+                        .padding(5.dp)
                         .fillMaxWidth()
-                        .weight(4f)) {
+                        .height(55.dp),
+                ){
+                    Row (modifier = Modifier
+                        .background(Color.White)
+                        .height(55.dp)
+                        .fillMaxWidth()
+                    ){
+                        Box (modifier = Modifier
+                            .background(Color.Cyan)
+                            .fillMaxHeight()
+                            .width(55.dp)
+                            .weight(1f)
 
-                        Text(text = "${item.first_name} ${item.last_name}",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(1.dp),
-                            color = colorResource(id = R.color.black),)
+                        ){
+                        }
+                        Column(modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxHeight()
+                            .fillMaxWidth()
+                            .weight(4f)) {
 
-                        Text(text = "${item.email}",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(1.dp),
-                            color = colorResource(id = R.color.black),)
+                            Text(text = "${item.first_name} ${item.last_name}",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(1.dp),
+                                color = colorResource(id = R.color.black),)
+
+                            Text(text = "${item.email}",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(1.dp),
+                                color = colorResource(id = R.color.black),)
+                        }
                     }
                 }
+
 
             }
         }

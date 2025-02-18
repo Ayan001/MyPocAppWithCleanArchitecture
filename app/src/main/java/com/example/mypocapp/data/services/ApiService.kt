@@ -12,10 +12,10 @@ import retrofit2.http.Query
 interface ApiService {
 
 
-    @GET("v1/images/search?size=small&has_breeds=true&order=RANDOM&page=0")
+    @GET("api/users")
     suspend fun fetchUsers(
-        @Query("limit") limit: Int
-    ): Response<List<UserResponse>>
+        @Query("page") limit: Int
+    ): Response<UserResponse>
 
 
 
