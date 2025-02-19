@@ -3,6 +3,7 @@ package com.example.mypocapp.presentation.ui.features.user.view
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,17 +45,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -64,6 +73,9 @@ import com.example.mypocapp.presentation.ui.features.user.navigation.NavigationS
 import com.example.mypocapp.presentation.ui.theme.MyPocAppTheme
 import com.example.mypocapp.util.TestTags
 import com.example.mypocapp.util.TestTags.PROGRESS_BAR
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ShimmerParams
+import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 
@@ -126,7 +138,7 @@ fun UserScreen(
                    // Show the "Refresh" button only when showRefreshButton is true
                },
                colors = centerAlignedTopAppBarColors(
-                   containerColor = colorResource(R.color.purple_200),
+                   containerColor = colorResource(R.color.purple_700),
                    titleContentColor = Color(R.color.white),
                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary
@@ -213,7 +225,9 @@ fun UserList(
             this.items (users)
             {item->
                 Card(
-                    modifier = Modifier.background(Color.Magenta)
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 6.dp),
+                    modifier = Modifier.background(Color.White)
                         .padding(5.dp)
                         .fillMaxWidth()
                         .height(55.dp),
@@ -230,6 +244,26 @@ fun UserList(
                             .weight(1f)
 
                         ){
+                            item.avatar?.let {
+                                GlideImage(
+                                    imageModel = it,
+                                    modifier = Modifier
+                                        .semantics { testTag = TestTags.LIST_IMG }
+                                        .wrapContentSize()
+                                        .wrapContentHeight()
+                                        .fillMaxWidth(),
+                                    // shows a progress indicator when loading an image.
+                                    contentScale = ContentScale.Crop,
+                                    circularReveal = CircularReveal(duration = 100),
+                                    shimmerParams = ShimmerParams(
+                                        baseColor = MaterialTheme.colorScheme.background,
+                                        highlightColor = Color.Gray,
+                                        durationMillis = 500,
+                                        dropOff = 0.55f,
+                                        tilt = 20f
+                                    ), contentDescription = TestTags.CAT_THUMBNAIL_PICTURE
+                                )
+                            }
                         }
                         Column(modifier = Modifier
                             .background(Color.White)
@@ -237,13 +271,14 @@ fun UserList(
                             .fillMaxWidth()
                             .weight(4f)) {
 
-                            Text(text = "${item.first_name} ${item.last_name}",
+                            Text(text = "  Name : ${item.first_name} ${item.last_name}",
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(1.dp),
                                 color = colorResource(id = R.color.black),)
 
-                            Text(text = "${item.email}",
+                            Text(text = "  Email : ${item.email}",
                                 textAlign = TextAlign.Center,
+                                fontStyle = FontStyle.Italic,
                                 modifier = Modifier.padding(1.dp),
                                 color = colorResource(id = R.color.black),)
                         }
