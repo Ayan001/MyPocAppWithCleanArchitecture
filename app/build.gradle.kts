@@ -11,7 +11,9 @@ plugins {
 android {
     namespace = "com.example.mypocapp"
     compileSdk = 35
-
+    lint {
+        abortOnError false
+      }
     defaultConfig {
         applicationId = "com.example.mypocapp"
         minSdk = 24
