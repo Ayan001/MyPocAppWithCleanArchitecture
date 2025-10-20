@@ -12,7 +12,7 @@ android {
     namespace = "com.example.mypocapp"
     compileSdk = 35
     lint {
-        abortOnError false
+        abortOnError = false
       }
     defaultConfig {
         applicationId = "com.example.mypocapp"
